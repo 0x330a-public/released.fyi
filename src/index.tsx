@@ -15,6 +15,9 @@ export const app = new Frog<{State: State}>({
   ui: {vars},
   imageAspectRatio: "1:1",
   origin: "https://released.fyi",
+  headers: {
+    'Content-Type': 'application/json',
+  },
   imageOptions: {
     width: 512,
     height: 512
