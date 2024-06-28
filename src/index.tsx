@@ -1,7 +1,7 @@
 import {Button, Frog} from 'frog'
 import {devtools} from 'frog/dev'
 import {serveStatic} from 'frog/serve-static'
-import {Box, Heading, Image, Spacer, Text, vars, VStack} from './ui.js'
+import {Box, Heading, Image, Spacer, Text, Divider, vars, VStack} from './ui.js'
 import * as console from "node:console";
 import {JSX} from "hono/dist/types/jsx/base.js";
 
@@ -139,9 +139,7 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   const redirectButton = <Button.Redirect location={apiResponse.url}>Read in browser</Button.Redirect>;
 
-  const inlineIntents = [
-    <Button.Reset>Back</Button.Reset>
-  ];
+  const inlineIntents = [];
   if (hasLessPages) {
     inlineIntents.push(<Button value={"prev"}>⇦</Button>)
   }
@@ -152,6 +150,9 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   const inlinePage =
   <VStack grow gap="4">
+    {overview}
+    <Spacer size={"4"}/>
+    <Divider direction={"horizontal"}/>
     <VStack grow alignVertical={"center"} gap="8">
       {pages[state.page]}
     </VStack>
@@ -169,14 +170,11 @@ app.frame('gh/:owner/:repo', async (c) => {
         backgroundColor="background200"
         padding="48"
       >
-        {buttonValue === undefined ? overview : inlinePage}
+        {inlinePage}
       </Box>
     ),
     intents:
-      buttonValue === undefined ? [
-        <Button value="read">Read inline</Button>,
-        redirectButton
-      ] : inlineIntents,
+      inlineIntents,
   })
 })
 
