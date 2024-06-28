@@ -14,8 +14,6 @@ type State = {
 export const app = new Frog<{State: State}>({
   ui: {vars},
   imageAspectRatio: "1:1",
-  headers: {
-  },
   imageOptions: {
     width: 512,
     height: 512
@@ -23,8 +21,6 @@ export const app = new Frog<{State: State}>({
   initialState: {
     page: 0
   },
-  // honoOptions: undefined,
-  title: "released.fyi",
   hub: {
     apiUrl: HUB_URL
   },
