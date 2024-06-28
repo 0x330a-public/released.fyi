@@ -80,7 +80,7 @@ const pages = (apiResponse: ApiResponse): Array<JSX.Element[]> => {
     apiResponse.items.slice(1) : apiResponse.items;
 
   for(const item of toRender) {
-    if (building.length >= 10) {
+    if (building.length >= 6) {
       pages.push(building);
       building = [];
     } else if (item.text !== "") {
