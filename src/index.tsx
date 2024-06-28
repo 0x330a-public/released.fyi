@@ -47,63 +47,33 @@ type ApiResponse = {
   url: String,
 };
 
-app.frame('gh/:owner/:repo', async (c) => {
+const notFound = (
+  <Box
+    grow
+    alignVertical="center"
+    backgroundColor="background"
+    padding="32"
+  >
+    <VStack gap="4">
+      <Heading>😢</Heading>
+      <Heading>Couldn't find the specified release on this repository</Heading>
+      <Text>404: {owner} - {repo} @ {tag}</Text>
+    </VStack>
+  </Box>
+);
 
-  const {buttonValue, inputText, status, deriveState, req} = c
-
-  const state = deriveState(previous => {
-    if (buttonValue === "next") previous.page++
-    if (buttonValue === "prev") previous.page--
-  })
-
-  const {owner, repo} = req.param();
-  const tag = req.query("tag") ?? "latest";
-
-  const notFound = (
-    <Box
-      grow
-      alignVertical="center"
-      backgroundColor="background"
-      padding="32"
-    >
-      <VStack gap="4">
-        <Heading>😢</Heading>
-        <Heading>Couldn't find the specified release on this repository</Heading>
-        <Text>404: {owner} - {repo} @ {tag}</Text>
-      </VStack>
-    </Box>
-  );
-
-  if (owner === ":owner" && repo === ":repo") {
-    return c.res({
-      image: notFound,
-    });
-  }
-
-  let fetchUrl = `https://api.released.fyi/${owner}/${repo}`;
-  if (tag !== "latest") {
-    fetchUrl += `?tag=${tag}`;
-  }
-  console.log("fetching", fetchUrl);
-  const response = await fetch(fetchUrl);
-
-  if (response.status == 404) {
-    return c.res({
-      image: notFound,
-    });
-  }
-
-  console.log("received data");
-
-  const apiResponse: ApiResponse = await response.json();
-
-  const overview = <VStack gap="4">
+const overview = (apiResponse: ApiResponse) => {
+  return (
+    <VStack gap="4">
     <Heading>{apiResponse.title}</Heading>
     <Text>released by {apiResponse.author?.name ?? "someone"}</Text>
     <Image width="32" height="32" borderRadius="32"
            src={apiResponse.author?.image ?? "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"}/>
-  </VStack>;
+  </VStack>
+  );
+}
 
+const pages = (apiResponse: ApiResponse): Array<JSX.Element[]> => {
   const pages : Array<JSX.Element[]> = [];
   let building: JSX.Element[] = [];
   const toRender = (apiResponse.items.length > 0 && apiResponse.items[0].text === "") ?
@@ -129,6 +99,43 @@ app.frame('gh/:owner/:repo', async (c) => {
   if (building.length > 0) {
     pages.push(building);
   }
+  return pages;
+}
+
+app.frame('gh/:owner/:repo', async (c) => {
+
+  const {buttonValue, inputText, status, deriveState, req} = c
+
+  const state = deriveState(previous => {
+    if (buttonValue === "next") previous.page++
+    if (buttonValue === "prev") previous.page--
+  })
+
+  const {owner, repo} = req.param();
+  const tag = req.query("tag") ?? "latest";
+
+  if (owner === ":owner" && repo === ":repo") {
+    return c.res({
+      image: notFound,
+    });
+  }
+
+  let fetchUrl = `https://api.released.fyi/${owner}/${repo}`;
+  if (tag !== "latest") {
+    fetchUrl += `?tag=${tag}`;
+  }
+  const response = await fetch(fetchUrl);
+
+  if (response.status == 404) {
+    return c.res({
+      image: notFound,
+    });
+  }
+
+  const apiResponse: ApiResponse = await response.json();
+  const ov = overview(apiResponse);
+
+  const pg = pages(apiResponse);
 
   const hasMorePages = state.page < pages.length - 1;
   const hasLessPages = state.page > 0;
@@ -146,13 +153,13 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   const inlinePage =
   <VStack grow gap="4">
-    {overview}
+    {ov}
     <Spacer size={"4"}/>
     <Divider direction={"horizontal"}/>
     <VStack grow alignVertical={"center"} gap="8">
-      {pages[state.page]}
+      {pg[state.page]}
     </VStack>
-    <Text size="16" grow align={"center"}>Page: {state.page+1}/{pages.length}</Text>
+    <Text size="16" grow align={"center"}>Page: {state.page+1}/{pg.length}</Text>
   </VStack>;
 
   console.log("rendering page",state.page);
