@@ -14,7 +14,6 @@ type State = {
 export const app = new Frog<{State: State}>({
   ui: {vars},
   imageAspectRatio: "1:1",
-  origin: "https://released.fyi",
   headers: {
   },
   imageOptions: {
