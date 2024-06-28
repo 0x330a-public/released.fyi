@@ -47,7 +47,7 @@ type ApiResponse = {
   url: String,
 };
 
-const notFound = (
+const notFound = (owner: String, repo: String, tag: String) => (
   <Box
     grow
     alignVertical="center"
@@ -116,7 +116,7 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   if (owner === ":owner" && repo === ":repo") {
     return c.res({
-      image: notFound,
+      image: notFound(owner,repo,tag),
     });
   }
 
@@ -128,7 +128,7 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   if (response.status == 404) {
     return c.res({
-      image: notFound,
+      image: notFound(owner,repo,tag),
     });
   }
 
