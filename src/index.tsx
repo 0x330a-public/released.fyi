@@ -174,8 +174,6 @@ app.frame('gh/:owner/:repo', async (c) => {
   })
 })
 
-app.use("/", c => c.redirect("https://github.com/0x330a-public/released.fyi"));
-
 app.use('/*', serveStatic({root: './public'}))
 devtools(app, {serveStatic})
 
