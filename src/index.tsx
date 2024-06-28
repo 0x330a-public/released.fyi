@@ -22,7 +22,7 @@ export const app = new Frog<{State: State}>({
   initialState: {
     page: 0
   },
-  browserLocation: "/redir",
+  browserLocation: "/",
   // honoOptions: undefined,
   title: "released.fyi",
   hub: {
