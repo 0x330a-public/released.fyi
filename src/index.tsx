@@ -137,7 +137,7 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   const pg = pages(apiResponse);
 
-  const hasMorePages = state.page < pages.length - 1;
+  const hasMorePages = state.page < pg.length - 1;
   const hasLessPages = state.page > 0;
 
   const redirectButton = <Button.Redirect location={apiResponse.url}>Read in browser</Button.Redirect>;
