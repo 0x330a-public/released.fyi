@@ -105,7 +105,7 @@ const pages = (apiResponse: ApiResponse): Array<JSX.Element[]> => {
 
 app.frame('gh/:owner/:repo', async (c) => {
 
-  const {buttonValue, inputText, status, deriveState, req} = c
+  const {buttonValue, deriveState, req} = c
 
   const state = deriveState(previous => {
     if (buttonValue === "next") previous.page++
