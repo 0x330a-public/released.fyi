@@ -26,7 +26,7 @@ export const app = new Frog<{State: State}>({
     apiUrl: HUB_URL
   },
   verify: "silent",
-});
+} as any);
 
 type AuthorInfo = {
   name: String,
@@ -117,6 +117,10 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   if (owner === ":owner" && repo === ":repo") {
     return c.res({
+      imageOptions: {
+        width: 512,
+        height: 512
+      },
       image: notFound(owner,repo,tag),
     });
   }
@@ -125,10 +129,15 @@ app.frame('gh/:owner/:repo', async (c) => {
   if (tag !== "latest") {
     fetchUrl += `?tag=${tag}`;
   }
+
   const response = await fetch(fetchUrl);
 
   if (response.status == 404) {
     return c.res({
+      imageOptions: {
+        width: 512,
+        height: 512
+      },
       image: notFound(owner,repo,tag),
     });
   }
@@ -167,6 +176,10 @@ app.frame('gh/:owner/:repo', async (c) => {
 
   return c.res({
     title: `Released: ${apiResponse.title}`,
+    imageOptions: {
+      width: 512,
+      height: 512,
+    },
     image: (
       <Box
         grow
@@ -179,11 +192,11 @@ app.frame('gh/:owner/:repo', async (c) => {
     ),
     intents:
       inlineIntents,
-  })
-})
+  });
+});
 
-app.use('/*', serveStatic({root: './public'}))
-devtools(app, {serveStatic})
+app.use('/*', serveStatic({root: './public'}));
+devtools(app, {serveStatic});
 
 if (typeof Bun !== 'undefined') {
   Bun.serve({
